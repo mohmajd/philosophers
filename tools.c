@@ -6,7 +6,7 @@
 /*   By: mohmajdo <mohmajdo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 01:40:01 by mohmajdo          #+#    #+#             */
-/*   Updated: 2025/05/19 18:45:38 by mohmajdo         ###   ########.fr       */
+/*   Updated: 2025/05/19 18:30:17 by mohmajdo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,14 +90,8 @@ void	put_down_fork(t_philo *philo)
 
 void	last_meal_eaten(t_philo *philo)
 {
-	static int i;
 	pthread_mutex_lock(philo->meals_mutex);
 	philo->last_time_eat = get_time_ms();
 	philo->meals_eaten++;
-	while (i < 3)
-	{
-		printf ("%d\n", philo->meals_eaten);
-		i++;
-	}
 	pthread_mutex_unlock(philo->meals_mutex);
 }

@@ -6,7 +6,7 @@
 /*   By: mohmajdo <mohmajdo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/13 17:44:12 by mohmajdo          #+#    #+#             */
-/*   Updated: 2025/05/19 18:45:52 by mohmajdo         ###   ########.fr       */
+/*   Updated: 2025/05/21 15:43:16 by mohmajdo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,8 +100,8 @@ void	*routine(void *arg)
 	usleep (1000 * (philo->args->t_eat / 2));
 	while (1)
 	{
-		// if (ft_check_simulation(philo))
-		// 	break;
+		if (ft_check_simulation(philo))
+			break;
 		print_state(philo, "is thinking");
 		take_fork(philo);
 		print_state(philo, "is eating");
@@ -110,6 +110,7 @@ void	*routine(void *arg)
 		put_down_fork(philo);
 		print_state(philo, "is sleeping");
 		ft_sleep(philo, philo->args->t_sleep);
+		// exit (0);
 	}
 	return (NULL);
 }
@@ -140,5 +141,5 @@ bool	ft_creat_philo(t_prog *prog)
 	i = -1;
 	while (++i <  prog->args.philo_num)
 		pthread_join(prog->philosophers[i].thread, NULL);
-	return (pthread_join(monitor, NULL), true);
+	return (/*pthread_join(monitor, NULL)*/true);
 }

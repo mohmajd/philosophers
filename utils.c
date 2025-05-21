@@ -6,7 +6,7 @@
 /*   By: mohmajdo <mohmajdo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 19:10:13 by mohmajdo          #+#    #+#             */
-/*   Updated: 2025/05/19 18:39:40 by mohmajdo         ###   ########.fr       */
+/*   Updated: 2025/05/21 15:32:05 by mohmajdo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,6 @@ void	ft_sleep(t_philo *philo, long num)
 	long	start;
 
 	start = get_time_ms();
-	num *= 1000;
 	while (get_time_ms() - start < num)
 	{
 		if (ft_check_simulation(philo))

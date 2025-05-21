@@ -6,7 +6,7 @@
 /*   By: mohmajdo <mohmajdo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 01:36:15 by mohmajdo          #+#    #+#             */
-/*   Updated: 2025/05/19 18:13:42 by mohmajdo         ###   ########.fr       */
+/*   Updated: 2025/05/21 15:39:41 by mohmajdo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,7 @@ void	*mounitor_routine(void *args)
 	t_prog	*prog;
 	int		i;
 	long	time_since_meal;
+	long	time;
 
 	prog = (t_prog *)args;
 	while (!prog->shared.stop_simulation)
@@ -63,7 +64,10 @@ void	*mounitor_routine(void *args)
 			time_since_meal = get_time_ms() - prog->philosophers[i].last_time_eat;
 			pthread_mutex_unlock(prog->philosophers[i].meals_mutex);
 			if (ft_check_is_died(prog, time_since_meal))
-				return (print_state(&(prog->philosophers[i]), "philo died"), NULL);
+			{
+				time = get_time_ms - prog->philosophers[i].shared->start_time;
+				return (printf("%ld %d is died\n", time, prog->philosophers[i].id), NULL);
+			}
 			i++;
 		}
 		if (prog->args.num_meals > 0 && check_meals_eaten(prog))
