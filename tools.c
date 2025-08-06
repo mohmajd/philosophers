@@ -44,49 +44,25 @@ void	print_state(t_philo *philo, char *str)
 	bool	stop;
 	long	time;
 	
-	pthread_mutex_lock(&philo->shared->print_mutex);
 	pthread_mutex_lock(&philo->shared->stop_mutex);
 	stop = philo->shared->stop_simulation;
 	pthread_mutex_unlock(&philo->shared->stop_mutex);
 	if (!stop)
 	{
 		time = get_time_ms() - philo->shared->start_time;
+		pthread_mutex_lock(&philo->shared->print_mutex);
 		printf("%ld %d %s\n", time, philo->id, str);
+		pthread_mutex_unlock(&philo->shared->print_mutex);
 	}
-	pthread_mutex_unlock(&philo->shared->print_mutex);
 }
 
-// void	take_fork(t_philo *philo)
-// {
-// 	bool	fork_order;
-
-// 	fork_order = (philo->id < (philo->id + 1) % philo->args->philo_num);
-// 	// fork_order = ((philo->id % philo->args->philo_num) < ((philo->id + 1) % philo->args->philo_num));
-// 	if (fork_order)
-// 	{
-// 		pthread_mutex_lock(philo->left_fork);
-// 		print_state(philo, "has taken a fork");
-// 		pthread_mutex_lock(philo->right_fork);
-// 		print_state(philo, "has taken a fork");
-// 	}
-// 	else
-// 	{
-// 		pthread_mutex_lock(philo->right_fork);
-// 		print_state(philo, "has taken a fork");
-// 		pthread_mutex_lock(philo->left_fork);
-// 		print_state(philo, "has taken a fork");
-// 	}
-// }
 
 void    take_fork(t_philo *philo)
 {
-    // long start_wait;
-    
     if (philo->id % 2 == 0)  // Even philosophers
     {
         pthread_mutex_lock(philo->left_fork);
         print_state(philo, "has taken a fork");
-        // start_wait = get_time_ms();
         while (pthread_mutex_trylock(philo->right_fork) != 0)
         {
             if (get_time_ms() - philo->last_time_eat > philo->args->t_die - 10)
@@ -100,10 +76,8 @@ void    take_fork(t_philo *philo)
     }
     else  // Odd philosophers
     {
-		usleep(100);
         pthread_mutex_lock(philo->right_fork);
         print_state(philo, "has taken a fork");
-        // start_wait = get_time_ms();
         while (pthread_mutex_trylock(philo->left_fork) != 0)
         {
             if (get_time_ms() - philo->last_time_eat > philo->args->t_die - 10)

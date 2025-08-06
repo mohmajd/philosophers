@@ -12,17 +12,30 @@
 
 #include "philo.h"
 
-bool	ft_check_is_died(t_prog *prog, long time_since_last_meal)
+// bool	ft_check_is_died(t_prog *prog, long time_since_last_meal)
+// {
+// 	if (time_since_last_meal >= prog->args.t_die)
+// 	{
+// 		pthread_mutex_lock(&prog->shared.stop_mutex);
+// 		prog->shared.stop_simulation = true;
+// 		pthread_mutex_unlock(&prog->shared.stop_mutex);
+// 		return (true);
+// 	}
+// 	return (false);
+// }
+bool    ft_check_is_died(t_prog *prog, long time_since_last_meal)
 {
-	if (time_since_last_meal >= prog->args.t_die)
-	{
-		pthread_mutex_lock(&prog->shared.stop_mutex);
-		prog->shared.stop_simulation = true;
-		pthread_mutex_unlock(&prog->shared.stop_mutex);
-		return (true);
-	}
-	return (false);
+    if (time_since_last_meal > prog->args.t_die)  // Changed >= to >
+    {
+        pthread_mutex_lock(&prog->shared.stop_mutex);
+        prog->shared.stop_simulation = true;
+        pthread_mutex_unlock(&prog->shared.stop_mutex);
+        return (true);
+    }
+    return (false);
 }
+
+
 bool	check_meals_eaten(t_prog *prog)
 {
 	int	i;
@@ -81,7 +94,7 @@ void	*mounitor_routine(void *args)
 		}
 		if (prog->args.num_meals > 0 && check_meals_eaten(prog))
 			return (print_state(&(prog->philosophers[0]), "all philo are full") ,NULL);
-		usleep(1000);
+		usleep(3000);
 	}
 	return (NULL);
 }

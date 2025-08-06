@@ -144,13 +144,13 @@ bool	ft_creat_philo(t_prog *prog)
 		}
 		i++;
 	}
-	prog->shared.start_time = get_time_ms();
-	innit_philo_start_time(prog);
 	if (pthread_create(&monitor, NULL, mounitor_routine, prog) != 0)
 	{
 		prog->shared.stop_simulation = true;
 		return (pthread_mutex_unlock(&prog->shared.start_mutex), false);
 	}
+	prog->shared.start_time = get_time_ms();
+	innit_philo_start_time(prog);
 	pthread_mutex_unlock(&prog->shared.start_mutex);
 	i = -1;
 	while (++i <  prog->args.philo_num)
