@@ -77,5 +77,7 @@ void	ft_sleep(t_philo *philo, long num);
 void	free_meals_mutex(t_prog *prog, int i);
 void	free_philo(t_prog *prog);
 int	ft_atoi(char *str);
+void	innit_philo_start_time(t_prog *prog);
+void	last_meal_eaten_2(t_philo *philo);
 
 #endif

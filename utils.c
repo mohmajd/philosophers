@@ -24,18 +24,41 @@ bool	ft_check_simulation(t_philo *philo)
 	return (true);
 }
 
+// void	ft_sleep(t_philo *philo, long num)
+// {
+// 	long	start;
+
+// 	start = get_time_ms();
+// 	while (get_time_ms() - start < num)
+// 	{
+// 		if (ft_check_simulation(philo))
+// 			break;
+// 		usleep(1000);
+// 	}
+// }
+
 void	ft_sleep(t_philo *philo, long num)
 {
 	long	start;
+	long	elapsed;
 
 	start = get_time_ms();
-	while (get_time_ms() - start < num)
+	while (1)
 	{
 		if (ft_check_simulation(philo))
 			break;
-		usleep(150);
+			// return (false);
+		elapsed = get_time_ms() - start;
+		if (elapsed >= num)
+			break;
+		if (num - elapsed > 10)
+			usleep (1000);
+		else
+			usleep (100);
 	}
+	// return (true);
 }
+
 long	get_time_ms(void)
 {
 	struct timeval	tv;

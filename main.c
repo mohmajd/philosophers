@@ -12,9 +12,9 @@
 
 #include "philo.h"
 
-bool	ft_check_is_died(t_prog *prog, int time_since_last_meal)
+bool	ft_check_is_died(t_prog *prog, long time_since_last_meal)
 {
-	if (time_since_last_meal > prog->args.t_die)
+	if (time_since_last_meal >= prog->args.t_die)
 	{
 		pthread_mutex_lock(&prog->shared.stop_mutex);
 		prog->shared.stop_simulation = true;
@@ -55,8 +55,17 @@ void	*mounitor_routine(void *args)
 	long	time;
 
 	prog = (t_prog *)args;
-	while (!prog->shared.stop_simulation)
+	pthread_mutex_lock(&prog->shared.start_mutex);
+	pthread_mutex_unlock(&prog->shared.start_mutex);
+	while (1)
 	{
+		pthread_mutex_lock(&prog->shared.stop_mutex);
+        if (prog->shared.stop_simulation)
+        {
+            pthread_mutex_unlock(&prog->shared.stop_mutex);
+            break;
+        }
+        pthread_mutex_unlock(&prog->shared.stop_mutex);
 		i = 0;
 		while (i < prog->args.philo_num)
 		{
@@ -65,13 +74,13 @@ void	*mounitor_routine(void *args)
 			pthread_mutex_unlock(prog->philosophers[i].meals_mutex);
 			if (ft_check_is_died(prog, time_since_meal))
 			{
-				time = get_time_ms - prog->philosophers[i].shared->start_time;
-				return (printf("%ld %d is died\n", time, prog->philosophers[i].id), NULL);
+				time = get_time_ms() - prog->philosophers[i].shared->start_time;
+				return (printf("%ld %d died\n", time, prog->philosophers[i].id), NULL);
 			}
 			i++;
 		}
 		if (prog->args.num_meals > 0 && check_meals_eaten(prog))
-			return (print_state(&(prog->philosophers[i]), "all philo are full") ,NULL);
+			return (print_state(&(prog->philosophers[0]), "all philo are full") ,NULL);
 		usleep(1000);
 	}
 	return (NULL);
@@ -107,6 +116,15 @@ int	main(int ac, char **av)
 		return (1);
 	if (!ft_innit(&prog, args))
 		return (printf("error while initializing variables"), 1);
+	if (prog.args.philo_num == 1)
+	{
+		pthread_mutex_lock(&prog.forks[0]);
+		printf("0 1 has taken a fork\n");
+		usleep(prog.args.t_die * 1000);
+		printf("%ld 1 died\n", prog.args.t_die);
+		pthread_mutex_unlock(&prog.forks[0]);
+		return (ft_cleanup(&prog), 0);
+	}
 	if (!ft_creat_philo(&prog))
 	{
 		ft_cleanup(&prog);

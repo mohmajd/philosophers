@@ -1,0 +1,148 @@
+_______________________________________
+	131 601 200 200 10
+1       Fail    [x]     602 2 died
+2       Pass    [✓]     602 49 is thinking
+3       Fail    [x]     602 2 died
+4       Fail    [x]     602 2 died
+5       Fail    [x]     603 2 died
+6       Fail    [x]     603 2 died
+7       Fail    [x]     603 2 died
+8       Fail    [x]     602 2 died
+9       Fail    [x]     602 2 died
+10      Fail    [x]     602 2 died
+	10 % correct
+_________________________
+199 605 200 200 10
+1       Fail    [x]     606 2 died
+2       Fail    [x]     606 2 died
+3       Pass    [✓]     4015 28 is eating
+4       Pass    [✓]     4217 71 has taken a fork
+5       Pass    [✓]     4217 169 has taken a fork
+6       Pass    [✓]     4215 133 has taken a fork
+7       Pass    [✓]     4222 76 is sleeping
+8       Pass    [✓]     4219 177 has taken a fork
+9       Fail    [x]     2211 6 died
+10      Pass    [✓]     4211 145 is eating
+	70 % correct
+
+	199 601 200 200 10
+1       Pass    [✓]     4216 55 is eating
+2       Fail    [x]     603 2 died
+3       Fail    [x]     602 2 died
+4       Fail    [x]     602 2 died
+5       Fail    [x]     602 2 died
+6       Fail    [x]     602 2 died
+7       Pass    [✓]     4208 1 is eating
+8       Pass    [✓]     4018 136 is eating
+9       Fail    [x]     602 2 died
+10      Fail    [x]     602 2 died
+	30 % correct
+esting even numbers (overkill) - they shouldn't die
+	50 410 200 100 10
+1       Fail    [x]     2613 12 died
+2       Pass    [✓]     3802 21 is eating
+3       Fail    [x]     3514 18 died
+4       Fail    [x]     1113 2 died
+5       Fail    [x]     1814 20 died
+6       Fail    [x]     2015 37 died
+7       Fail    [x]     1313 7 died
+8       Fail    [x]     2214 30 died
+9       Fail    [x]     3713 17 died
+10      Fail    [x]     2513 11 died
+	10 % correct
+______________________
+
+	50 401 200 200 10
+1       Fail    [x]     1203 14 died
+2       Fail    [x]     604 21 died
+3       Fail    [x]     402 2 died
+4       Fail    [x]     2003 46 died
+5       Pass    [✓]     3805 23 is eating
+6       Fail    [x]     2005 48 died
+7       Fail    [x]     1603 8 died
+8       Fail    [x]     803 12 died
+9       Fail    [x]     402 2 died
+10      Fail    [x]     402 2 died
+	10 % correct
+_______________________________
+
+1       Fail    [x]     1114 96 died
+2       Fail    [x]     1214 113 died
+LOADING	##Fatal glibc error: pthread_mutex_lock.c:94 (___pthread_mutex_lock): assertion failed: mutex->__data.__owner == 0
+3       Pass    [✓]     1202 23 is s
+4       Fail    [x]     913 59 died
+5       Fail    [x]     914 97 died
+6       Fail    [x]     1113 106 died
+7       Fail    [x]     1113 52 died
+8       Fail    [x]     1115 32 died
+9       Fail    [x]     1113 40 died
+10      Fail    [x]     918 49 died
+	10 % correct
+________________________
+3 599 200 200 10
+1       Pass    [✓]     600 2 died
+2       Pass    [✓]     600 2 died
+3       Fail    [x]     4400 2 is sleeping
+4       Fail    [x]     4400 1 is eating
+5       Fail    [x]     4401 3 is sleeping
+6       Pass    [✓]     4200 2 died
+7       Fail    [x]     4600 1 is eating
+8       Fail    [x]     4590 1 is eating
+9       Fail    [x]     4400 1 is eating
+10      Pass    [✓]     2401 2 died
+	40 % correct
+____________________________________________
+	3 600 200 200 10
+1       Fail    [x]     4601 3 is thinking
+2       Fail    [x]     4400 1 is eating
+3       Fail    [x]     4601 2 is sleeping
+4       Fail    [x]     4400 3 is sleeping
+5       Fail    [x]     4400 1 is eating
+6       Fail    [x]     4400 1 is eating
+7       Fail    [x]     4601 1 is eating
+8       Fail    [x]     4401 1 is eating
+9       Fail    [x]     4400 1 is eating
+10      Fail    [x]     4601 2 is thinking
+	0 % correct
+
+	31 600 200 200 10
+1       Fail    [x]     4202 15 is eating
+2       Pass    [✓]     601 2 died
+3       Fail    [x]     4202 15 is eating
+4       Fail    [x]     4400 1 is eating
+5       Pass    [✓]     601 2 died
+6       Pass    [✓]     601 2 died
+7       Fail    [x]     4203 13 is eating
+8       Fail    [x]     4202 1 is eating
+9       Fail    [x]     4003 28 is eating
+10      Fail    [x]     4204 19 is eating
+	30 % correct
+
+ting even numbers - one should die
+	3 599 200 200 10
+1       Pass    [✓]     600 2 died
+2       Fail    [x]     4400 1 is eating
+3       Fail    [x]     4401 1 is eating
+4       Pass    [✓]     600 2 died
+5       Fail    [x]     4600 1 is eating
+6       Fail    [x]     4790 1 is eating
+7       Pass    [✓]     3600 1 died
+8       Pass    [✓]     3201 1 died
+9       Fail    [x]     4400 1 is eating
+10      Fail    [x]     4401 1 is eating
+	40 % correct
+
+Testing even numbers - one should die
+	3 599 200 200 10
+1       Pass    [✓]     600 2 died
+2       Fail    [x]     4400 1 is eating
+3       Fail    [x]     4401 1 is eating
+4       Pass    [✓]     600 2 died
+5       Fail    [x]     4600 1 is eating
+6       Fail    [x]     4790 1 is eating
+7       Pass    [✓]     3600 1 died
+8       Pass    [✓]     3201 1 died
+9       Fail    [x]     4400 1 is eating
+10      Fail    [x]     4401 1 is eating
+	40 % correct
+_______________________

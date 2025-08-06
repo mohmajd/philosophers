@@ -32,6 +32,7 @@ bool	ft_innit_forks(t_prog *prog)
 	}
 	return (true);
 }
+
 bool	ft_innit_philo(t_prog *prog)
 {
 	int	i;
@@ -44,7 +45,6 @@ bool	ft_innit_philo(t_prog *prog)
 		prog->philosophers[i].id = i + 1;
 		prog->philosophers[i].left_fork = &prog->forks[i];
 		prog->philosophers[i].right_fork = &prog->forks[(i + 1) % prog->args.philo_num];
-		prog->philosophers[i].last_time_eat = 0;
 		prog->philosophers[i].meals_eaten = 0;
 		prog->philosophers[i].meals_mutex = malloc(sizeof(pthread_mutex_t));
 		if (!prog->philosophers[i].meals_mutex)
@@ -64,6 +64,7 @@ bool	ft_innit_philo(t_prog *prog)
 bool	ft_innit(t_prog *prog, t_info *args)
 {
 	prog->args = *args;
+	free (args);
 	if (pthread_mutex_init(&prog->shared.print_mutex, NULL)!= 0)
 		return (false);
 	if (pthread_mutex_init(&prog->shared.start_mutex, NULL) != 0)
@@ -74,7 +75,6 @@ bool	ft_innit(t_prog *prog, t_info *args)
 		return (pthread_mutex_destroy(&prog->shared.start_mutex), false);
 	}
 	prog->shared.stop_simulation = false;
-	prog->shared.start_time = get_time_ms();
 	if (!ft_innit_forks(prog))
 	{
 		pthread_mutex_destroy(&prog->shared.print_mutex);
@@ -89,6 +89,19 @@ bool	ft_innit(t_prog *prog, t_info *args)
 	return (true);
 }
 
+void	innit_philo_start_time(t_prog *prog)
+{
+	int	i;
+
+	i = 0;
+	while (i < prog->args.philo_num)
+	{
+		pthread_mutex_lock(prog->philosophers[i].meals_mutex);
+		prog->philosophers[i].last_time_eat = prog->shared.start_time;
+		pthread_mutex_unlock(prog->philosophers[i].meals_mutex);
+		i++;
+	}
+}
 void	*routine(void *arg)
 {
 	t_philo	*philo;
@@ -97,20 +110,20 @@ void	*routine(void *arg)
 	pthread_mutex_lock(&philo->shared->start_mutex);
 	pthread_mutex_unlock(&philo->shared->start_mutex);
 	if (philo->id % 2 == 1)
-	usleep (1000 * (philo->args->t_eat / 2));
+		usleep (1000 * (philo->args->t_eat / 2));
 	while (1)
 	{
 		if (ft_check_simulation(philo))
 			break;
 		print_state(philo, "is thinking");
 		take_fork(philo);
-		print_state(philo, "is eating");
 		last_meal_eaten(philo);
+		print_state(philo, "is eating");
 		ft_sleep(philo, philo->args->t_eat);
+		last_meal_eaten_2(philo);
 		put_down_fork(philo);
 		print_state(philo, "is sleeping");
 		ft_sleep(philo, philo->args->t_sleep);
-		// exit (0);
 	}
 	return (NULL);
 }
@@ -131,15 +144,16 @@ bool	ft_creat_philo(t_prog *prog)
 		}
 		i++;
 	}
+	prog->shared.start_time = get_time_ms();
+	innit_philo_start_time(prog);
 	if (pthread_create(&monitor, NULL, mounitor_routine, prog) != 0)
 	{
 		prog->shared.stop_simulation = true;
 		return (pthread_mutex_unlock(&prog->shared.start_mutex), false);
 	}
-	prog->shared.start_time = get_time_ms();
 	pthread_mutex_unlock(&prog->shared.start_mutex);
 	i = -1;
 	while (++i <  prog->args.philo_num)
 		pthread_join(prog->philosophers[i].thread, NULL);
-	return (/*pthread_join(monitor, NULL)*/true);
+	return (pthread_join(monitor, NULL), true);
 }
