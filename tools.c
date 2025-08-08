@@ -59,36 +59,22 @@ void	print_state(t_philo *philo, char *str)
 
 void    take_fork(t_philo *philo)
 {
-    if (philo->id % 2 == 0)  // Even philosophers
+    if (philo->id % 2 == 0)
     {
         pthread_mutex_lock(philo->left_fork);
         print_state(philo, "has taken a fork");
-        while (pthread_mutex_trylock(philo->right_fork) != 0)
-        {
-            if (get_time_ms() - philo->last_time_eat > philo->args->t_die - 10)
-            {
-                pthread_mutex_unlock(philo->left_fork);
-                return;
-            }
-            usleep(100);
-        }
+        pthread_mutex_lock(philo->right_fork);  // Remove trylock, use blocking
         print_state(philo, "has taken a fork");
     }
-    else  // Odd philosophers
+    else
     {
+        usleep(100);
         pthread_mutex_lock(philo->right_fork);
         print_state(philo, "has taken a fork");
-        while (pthread_mutex_trylock(philo->left_fork) != 0)
-        {
-            if (get_time_ms() - philo->last_time_eat > philo->args->t_die - 10)
-            {
-                pthread_mutex_unlock(philo->right_fork);
-                return;
-            }
-            usleep(100);
-        }
+        pthread_mutex_lock(philo->left_fork);   // Remove trylock, use blocking
         print_state(philo, "has taken a fork");
     }
+    last_meal_eaten(philo);
 }
 
 void	put_down_fork(t_philo *philo)
