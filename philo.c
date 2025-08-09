@@ -115,12 +115,22 @@ void	*routine(void *arg)
 	{
 		if (ft_check_simulation(philo))
 			break;
+		if (philo->args->num_meals > 0)
+        {
+            pthread_mutex_lock(philo->meals_mutex);
+            if (philo->meals_eaten >= philo->args->num_meals)
+            {
+                pthread_mutex_unlock(philo->meals_mutex);
+                break;
+            }
+            pthread_mutex_unlock(philo->meals_mutex);
+        }
 		print_state(philo, "is thinking");
 		take_fork(philo);
 		last_meal_eaten(philo);
 		print_state(philo, "is eating");
-		ft_sleep(philo, philo->args->t_eat);
 		last_meal_eaten_2(philo);
+		ft_sleep(philo, philo->args->t_eat);
 		put_down_fork(philo);
 		print_state(philo, "is sleeping");
 		ft_sleep(philo, philo->args->t_sleep);

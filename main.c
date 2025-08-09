@@ -36,30 +36,52 @@ bool    ft_check_is_died(t_prog *prog, long time_since_last_meal)
 }
 
 
-bool	check_meals_eaten(t_prog *prog)
-{
-	int	i;
-	int	full_philo;
+// bool	check_meals_eaten(t_prog *prog)
+// {
+// 	int	i;
+// 	int	full_philo;
 
-	i = 0;
-	full_philo = 0;
-	while (i < prog->args.philo_num)
-	{
-		pthread_mutex_lock(prog->philosophers[i].meals_mutex);
-		if (prog->philosophers[i].meals_eaten >= prog->args.num_meals)
-			full_philo++;
-		pthread_mutex_unlock(prog->philosophers[i].meals_mutex);
-		i++;
-	}
-	if (full_philo == prog->args.philo_num)
-	{
-		pthread_mutex_lock(&prog->shared.stop_mutex);
-		prog->shared.stop_simulation = true;
-		pthread_mutex_unlock(&prog->shared.stop_mutex);
-		return (true);
-	}
-	return (false);
+// 	i = 0;
+// 	full_philo = 0;
+// 	while (i < prog->args.philo_num)
+// 	{
+// 		pthread_mutex_lock(prog->philosophers[i].meals_mutex);
+// 		if (prog->philosophers[i].meals_eaten >= prog->args.num_meals)
+// 			full_philo++;
+// 		pthread_mutex_unlock(prog->philosophers[i].meals_mutex);
+// 		i++;
+// 	}
+// 	if (full_philo == prog->args.philo_num)
+// 	{
+// 		pthread_mutex_lock(&prog->shared.stop_mutex);
+// 		prog->shared.stop_simulation = true;
+// 		pthread_mutex_unlock(&prog->shared.stop_mutex);
+// 		return (true);
+// 	}
+// 	return (false);
+// }
+
+bool    check_meals_eaten(t_prog *prog)
+{
+    int i;
+    int philosophers_done;
+
+    if (prog->args.num_meals <= 0)
+        return (false);
+
+    philosophers_done = 0;
+    i = -1;
+    while (++i < prog->args.philo_num)
+    {
+        pthread_mutex_lock(prog->philosophers[i].meals_mutex);
+        if (prog->philosophers[i].meals_eaten >= prog->args.num_meals)
+            philosophers_done++;
+        pthread_mutex_unlock(prog->philosophers[i].meals_mutex);
+    }
+    
+    return (philosophers_done == prog->args.philo_num);
 }
+
 void	*mounitor_routine(void *args)
 {
 	t_prog	*prog;
