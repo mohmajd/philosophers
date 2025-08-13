@@ -6,7 +6,7 @@
 /*   By: mohmajdo <mohmajdo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 19:10:13 by mohmajdo          #+#    #+#             */
-/*   Updated: 2025/05/21 15:32:05 by mohmajdo         ###   ########.fr       */
+/*   Updated: 2025/08/13 02:37:40 by mohmajdo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,19 +24,6 @@ bool	ft_check_simulation(t_philo *philo)
 	return (true);
 }
 
-// void	ft_sleep(t_philo *philo, long num)
-// {
-// 	long	start;
-
-// 	start = get_time_ms();
-// 	while (get_time_ms() - start < num)
-// 	{
-// 		if (ft_check_simulation(philo))
-// 			break;
-// 		usleep(1000);
-// 	}
-// }
-
 void	ft_sleep(t_philo *philo, long num)
 {
 	long	start;
@@ -46,25 +33,25 @@ void	ft_sleep(t_philo *philo, long num)
 	while (1)
 	{
 		if (ft_check_simulation(philo))
-			break;
-			// return (false);
+			break ;
 		elapsed = get_time_ms() - start;
 		if (elapsed >= num)
-			break;
+			break ;
 		if (num - elapsed > 10)
 			usleep (1000);
 		else
 			usleep (100);
 	}
-	// return (true);
 }
 
 long	get_time_ms(void)
 {
 	struct timeval	tv;
+
 	gettimeofday(&tv, NULL);
-    return (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
+	return ((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
 }
+
 void	free_meals_mutex(t_prog *prog, int i)
 {
 	while (--i >= 0)
@@ -77,7 +64,7 @@ void	free_meals_mutex(t_prog *prog, int i)
 void	free_philo(t_prog *prog)
 {
 	int	i;
-	
+
 	i = 0;
 	while (i < prog->args.philo_num)
 	{

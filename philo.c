@@ -6,7 +6,7 @@
 /*   By: mohmajdo <mohmajdo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/13 17:44:12 by mohmajdo          #+#    #+#             */
-/*   Updated: 2025/05/21 15:43:16 by mohmajdo         ###   ########.fr       */
+/*   Updated: 2025/08/13 03:55:04 by mohmajdo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ bool	ft_innit(t_prog *prog, t_info *args)
 {
 	prog->args = *args;
 	free (args);
-	if (pthread_mutex_init(&prog->shared.print_mutex, NULL)!= 0)
+	if (pthread_mutex_init(&prog->shared.print_mutex, NULL) != 0)
 		return (false);
 	if (pthread_mutex_init(&prog->shared.start_mutex, NULL) != 0)
 		return (pthread_mutex_destroy(&prog->shared.print_mutex), false);
@@ -102,6 +102,22 @@ void	innit_philo_start_time(t_prog *prog)
 		i++;
 	}
 }
+
+int	check_meals_number(t_philo *philo)
+{
+	if (philo->args->num_meals > 0)
+	{
+		pthread_mutex_lock(philo->meals_mutex);
+		if (philo->meals_eaten >= philo->args->num_meals)
+		{
+			pthread_mutex_unlock(philo->meals_mutex);
+			return (1);
+		}
+		pthread_mutex_unlock(philo->meals_mutex);
+	}
+	return (0);
+}
+
 void	*routine(void *arg)
 {
 	t_philo	*philo;
@@ -114,17 +130,9 @@ void	*routine(void *arg)
 	while (1)
 	{
 		if (ft_check_simulation(philo))
-			break;
-		if (philo->args->num_meals > 0)
-        {
-            pthread_mutex_lock(philo->meals_mutex);
-            if (philo->meals_eaten >= philo->args->num_meals)
-            {
-                pthread_mutex_unlock(philo->meals_mutex);
-                break;
-            }
-            pthread_mutex_unlock(philo->meals_mutex);
-        }
+			break ;
+		if (check_meals_number(philo))
+			break ;
 		print_state(philo, "is thinking");
 		take_fork(philo);
 		last_meal_eaten(philo);
@@ -141,18 +149,17 @@ void	*routine(void *arg)
 bool	ft_creat_philo(t_prog *prog)
 {
 	pthread_t	monitor;
-	int	i;
+	int			i;
 
-	i = 0;
+	i = -1;
 	pthread_mutex_lock(&prog->shared.start_mutex);
-	while (i < prog->args.philo_num)
+	while (++i < prog->args.philo_num)
 	{
 		if (pthread_create(&prog->philosophers[i].thread, NULL, routine, &prog->philosophers[i]) != 0)
 		{
 			prog->shared.stop_simulation = true;
 			return (pthread_mutex_unlock(&prog->shared.start_mutex), false);
 		}
-		i++;
 	}
 	if (pthread_create(&monitor, NULL, mounitor_routine, prog) != 0)
 	{
@@ -163,7 +170,7 @@ bool	ft_creat_philo(t_prog *prog)
 	innit_philo_start_time(prog);
 	pthread_mutex_unlock(&prog->shared.start_mutex);
 	i = -1;
-	while (++i <  prog->args.philo_num)
+	while (++i < prog->args.philo_num)
 		pthread_join(prog->philosophers[i].thread, NULL);
 	return (pthread_join(monitor, NULL), true);
 }
