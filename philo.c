@@ -6,32 +6,11 @@
 /*   By: mohmajdo <mohmajdo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/13 17:44:12 by mohmajdo          #+#    #+#             */
-/*   Updated: 2025/08/13 03:55:04 by mohmajdo         ###   ########.fr       */
+/*   Updated: 2025/08/16 22:52:11 by mohmajdo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-
-bool	ft_innit_forks(t_prog *prog)
-{
-	int	i;
-
-	i = 0;
-	prog->forks = malloc(sizeof(pthread_mutex_t) * prog->args.philo_num);
-	if (!prog->forks)
-		return (false);
-	while (i < prog->args.philo_num)
-	{
-		if (pthread_mutex_init(&prog->forks[i], NULL) != 0)
-		{
-			while (--i >= 0)
-				pthread_mutex_destroy(&prog->forks[i]);
-			return (free(prog->forks), false);
-		}
-		i++;
-	}
-	return (true);
-}
 
 bool	ft_innit_philo(t_prog *prog)
 {
@@ -44,7 +23,8 @@ bool	ft_innit_philo(t_prog *prog)
 	{
 		prog->philosophers[i].id = i + 1;
 		prog->philosophers[i].left_fork = &prog->forks[i];
-		prog->philosophers[i].right_fork = &prog->forks[(i + 1) % prog->args.philo_num];
+		prog->philosophers[i].right_fork = (&prog->forks[(i + 1)
+				% prog->args.philo_num]);
 		prog->philosophers[i].meals_eaten = 0;
 		prog->philosophers[i].meals_mutex = malloc(sizeof(pthread_mutex_t));
 		if (!prog->philosophers[i].meals_mutex)
@@ -94,6 +74,7 @@ void	innit_philo_start_time(t_prog *prog)
 	int	i;
 
 	i = 0;
+	prog->shared.start_time = get_time_ms();
 	while (i < prog->args.philo_num)
 	{
 		pthread_mutex_lock(prog->philosophers[i].meals_mutex);
@@ -101,21 +82,6 @@ void	innit_philo_start_time(t_prog *prog)
 		pthread_mutex_unlock(prog->philosophers[i].meals_mutex);
 		i++;
 	}
-}
-
-int	check_meals_number(t_philo *philo)
-{
-	if (philo->args->num_meals > 0)
-	{
-		pthread_mutex_lock(philo->meals_mutex);
-		if (philo->meals_eaten >= philo->args->num_meals)
-		{
-			pthread_mutex_unlock(philo->meals_mutex);
-			return (1);
-		}
-		pthread_mutex_unlock(philo->meals_mutex);
-	}
-	return (0);
 }
 
 void	*routine(void *arg)
@@ -126,18 +92,15 @@ void	*routine(void *arg)
 	pthread_mutex_lock(&philo->shared->start_mutex);
 	pthread_mutex_unlock(&philo->shared->start_mutex);
 	if (philo->id % 2 == 1)
-		usleep (1000 * (philo->args->t_eat / 2));
+		usleep (500 * philo->args->t_eat);
 	while (1)
 	{
 		if (ft_check_simulation(philo))
-			break ;
-		if (check_meals_number(philo))
 			break ;
 		print_state(philo, "is thinking");
 		take_fork(philo);
 		last_meal_eaten(philo);
 		print_state(philo, "is eating");
-		last_meal_eaten_2(philo);
 		ft_sleep(philo, philo->args->t_eat);
 		put_down_fork(philo);
 		print_state(philo, "is sleeping");
@@ -155,7 +118,8 @@ bool	ft_creat_philo(t_prog *prog)
 	pthread_mutex_lock(&prog->shared.start_mutex);
 	while (++i < prog->args.philo_num)
 	{
-		if (pthread_create(&prog->philosophers[i].thread, NULL, routine, &prog->philosophers[i]) != 0)
+		if (pthread_create(&prog->philosophers[i].thread, NULL, routine,
+				&prog->philosophers[i]) != 0)
 		{
 			prog->shared.stop_simulation = true;
 			return (pthread_mutex_unlock(&prog->shared.start_mutex), false);
@@ -166,7 +130,6 @@ bool	ft_creat_philo(t_prog *prog)
 		prog->shared.stop_simulation = true;
 		return (pthread_mutex_unlock(&prog->shared.start_mutex), false);
 	}
-	prog->shared.start_time = get_time_ms();
 	innit_philo_start_time(prog);
 	pthread_mutex_unlock(&prog->shared.start_mutex);
 	i = -1;

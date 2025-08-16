@@ -6,7 +6,7 @@
 /*   By: mohmajdo <mohmajdo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 01:40:01 by mohmajdo          #+#    #+#             */
-/*   Updated: 2025/08/13 03:23:33 by mohmajdo         ###   ########.fr       */
+/*   Updated: 2025/08/15 06:26:09 by mohmajdo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,22 +58,25 @@ void	print_state(t_philo *philo, char *str)
 
 void	take_fork(t_philo *philo)
 {
-	if (philo->id % 2 == 0)
+	pthread_mutex_t	*first_fork;
+	pthread_mutex_t	*second_fork;
+
+	if (philo->left_fork < philo->right_fork)
 	{
-		pthread_mutex_lock(philo->left_fork);
-		print_state(philo, "has taken a fork");
-		pthread_mutex_lock(philo->right_fork);
-		print_state(philo, "has taken a fork");
+		first_fork = philo->left_fork;
+		second_fork = philo->right_fork;
 	}
 	else
 	{
-		usleep(100);
-		pthread_mutex_lock(philo->right_fork);
-		print_state(philo, "has taken a fork");
-		pthread_mutex_lock(philo->left_fork);
-		print_state(philo, "has taken a fork");
+		first_fork = philo->right_fork;
+		second_fork = philo->left_fork;
 	}
-	last_meal_eaten(philo);
+	if (philo->id % 2 == 1)
+		usleep(100);
+	pthread_mutex_lock(first_fork);
+	print_state(philo, "has taken a fork");
+	pthread_mutex_lock(second_fork);
+	print_state(philo, "has taken a fork");
 }
 
 void	put_down_fork(t_philo *philo)
@@ -94,12 +97,6 @@ void	last_meal_eaten(t_philo *philo)
 {
 	pthread_mutex_lock(philo->meals_mutex);
 	philo->last_time_eat = get_time_ms();
-	pthread_mutex_unlock(philo->meals_mutex);
-}
-
-void	last_meal_eaten_2(t_philo *philo)
-{
-	pthread_mutex_lock(philo->meals_mutex);
 	philo->meals_eaten++;
 	pthread_mutex_unlock(philo->meals_mutex);
 }
