@@ -6,73 +6,31 @@
 /*   By: mohmajdo <mohmajdo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 19:10:13 by mohmajdo          #+#    #+#             */
-/*   Updated: 2025/08/13 02:37:40 by mohmajdo         ###   ########.fr       */
+/*   Updated: 2025/08/22 22:06:05 by mohmajdo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-bool	ft_check_simulation(t_philo *philo)
-{
-	bool	stop;
-
-	pthread_mutex_lock(&philo->shared->stop_mutex);
-	stop = philo->shared->stop_simulation;
-	pthread_mutex_unlock(&philo->shared->stop_mutex);
-	if (!stop)
-		return (false);
-	return (true);
-}
-
-void	ft_sleep(t_philo *philo, long num)
-{
-	long	start;
-	long	elapsed;
-
-	start = get_time_ms();
-	while (1)
-	{
-		if (ft_check_simulation(philo))
-			break ;
-		elapsed = get_time_ms() - start;
-		if (elapsed >= num)
-			break ;
-		if (num - elapsed > 10)
-			usleep (1000);
-		else
-			usleep (100);
-	}
-}
-
-long	get_time_ms(void)
-{
-	struct timeval	tv;
-
-	gettimeofday(&tv, NULL);
-	return ((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
-}
-
-void	free_meals_mutex(t_prog *prog, int i)
-{
-	while (--i >= 0)
-	{
-		pthread_mutex_destroy(prog->philosophers[i].meals_mutex);
-		free(prog->philosophers[i].meals_mutex);
-	}
-}
-
-void	free_philo(t_prog *prog)
+void	free_philo(t_philo *philo)
 {
 	int	i;
 
 	i = 0;
-	while (i < prog->args.philo_num)
+	if (!philo)
+		return ;
+	pthread_mutex_destroy(philo->print_lock);
+	pthread_mutex_destroy(philo->meals_lock);
+	free(philo->print_lock);
+	free(philo->meals_lock);
+	while (i < philo->args->num_philo)
 	{
-		pthread_mutex_destroy(&prog->forks[i]);
+		pthread_mutex_destroy(&philo->forks[i]);
+		pthread_mutex_destroy(philo[i].last_eat);
+		free(philo[i].last_eat);
 		i++;
 	}
-	free (prog->forks);
-	pthread_mutex_destroy(&prog->shared.print_mutex);
-	pthread_mutex_destroy(&prog->shared.start_mutex);
-	pthread_mutex_destroy(&prog->shared.stop_mutex);
+	free(philo->forks);
+	free(philo->args);
+	free(philo);
 }

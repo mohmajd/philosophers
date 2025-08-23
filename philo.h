@@ -6,7 +6,7 @@
 /*   By: mohmajdo <mohmajdo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 01:37:10 by mohmajdo          #+#    #+#             */
-/*   Updated: 2025/08/16 22:40:40 by mohmajdo         ###   ########.fr       */
+/*   Updated: 2025/08/23 08:06:47 by mohmajdo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,70 +14,57 @@
 # define PHILO_H
 
 # include <stdio.h>
-# include <stdlib.h>
 # include <pthread.h>
-# include <unistd.h>
 # include <sys/time.h>
-# include <stdbool.h>
+# include <stdlib.h>
 # include <limits.h>
+# include <unistd.h>
+# include <stdbool.h>
 
-typedef struct s_info
+typedef struct s_args
 {
-	int		philo_num;
-	long	t_die;
-	long	t_eat;
-	long	t_sleep;
-	int		num_meals;
-}	t_info;
-
-typedef struct s_shared
-{
-	pthread_mutex_t	print_mutex;
-	pthread_mutex_t	start_mutex;
-	pthread_mutex_t	stop_mutex;
-	bool			stop_simulation;
-	long			start_time;
-}	t_shared;
+	int		num_philo;
+	int		time_die;
+	int		time_eat;
+	int		time_sleep;
+	int		num_eat;
+	int		died;
+}	t_args;
 
 typedef struct s_philo
 {
+	t_args			*args;
+	pthread_mutex_t	*print_lock;
+	pthread_mutex_t	*meals_lock;
+	pthread_mutex_t	*last_eat;
+	pthread_mutex_t	*forks;
 	int				id;
-	pthread_t		thread;
-	pthread_mutex_t	*left_fork;
-	pthread_mutex_t	*right_fork;
-	pthread_mutex_t	*meals_mutex;
 	long			last_time_eat;
-	int				meals_eaten;
-	t_shared		*shared;
-	t_info			*args;
+	long			start_time;
+	int				*n_eat;
+	int				stop;
 }	t_philo;
 
-typedef struct s_prog
-{
-	t_philo			*philosophers;
-	pthread_mutex_t	*forks;
-	t_shared		shared;
-	t_info			args;
-}	t_prog;
-
-void	print_state(t_philo *philo, char *str);
-long	get_time_ms(void);
-t_info	*ft_check_args(int ac, char **av);
-bool	ft_innit_forks(t_prog *prog);
-bool	ft_innit_philo(t_prog *prog);
-bool	ft_innit(t_prog *prog, t_info *args);
-void	*routine(void *arg);
-void	*mounitor_routine(void *args);
-bool	ft_creat_philo(t_prog *prog);
-bool	ft_check_simulation(t_philo *philo);
-void	take_fork(t_philo *philo);
-void	put_down_fork(t_philo *philo);
-void	last_meal_eaten(t_philo *philo);
-void	ft_sleep(t_philo *philo, long num);
-void	free_meals_mutex(t_prog *prog, int i);
-void	free_philo(t_prog *prog);
-int		ft_atoi(char *str);
-void	innit_philo_start_time(t_prog *prog);
-void	ft_cleanup(t_prog *prog);
-
+void			*routine(void *arg);
+pthread_mutex_t	*create_forks(int num_philos);
+t_philo			*init_variables(t_args *args, pthread_t **thread_id);
+bool			philo(t_philo *philosophers, pthread_mutex_t *forks		\
+					, t_args *args, pthread_t *id);
+void			first_innit_philo(t_philo *philo, int i, t_args *args		\
+					, pthread_mutex_t *forks);
+void			create_threads_and_check_death(t_philo *philosophers		\
+					, t_args *args, pthread_t *id);
+void			eat_update(t_philo *philo, int *meals);
+void			check_is_died(t_philo *philo, pthread_t *thread_id		\
+					, int i, long time);
+long			get(t_philo *philosophers, int i);
+long			get_time(void);
+void			ft_sleep(long time_ms);
+void			free_philo(t_philo *philo);
+t_args			*check_args(int ac, char **av);
+void			print_state(char *str, int id, long start_time	\
+					, pthread_mutex_t *print_lock);
+int				meals_number(t_philo philo);
+bool			check_num_args(char **av);
+int				ft_atoi(char *str);
 #endif

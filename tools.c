@@ -6,97 +6,54 @@
 /*   By: mohmajdo <mohmajdo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 01:40:01 by mohmajdo          #+#    #+#             */
-/*   Updated: 2025/08/15 06:26:09 by mohmajdo         ###   ########.fr       */
+/*   Updated: 2025/08/22 21:45:28 by mohmajdo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-t_info	*ft_check_args(int ac, char **av)
+long	get(t_philo *philosophers, int i)
 {
-	t_info	*args;
-
-	if (ac < 5 || ac > 6)
-		return (printf("too many args\n"), NULL);
-	args = malloc(sizeof(t_info));
-	if (!args)
-		return (NULL);
-	args->philo_num = ft_atoi(av[1]);
-	args->t_die = ft_atoi(av[2]);
-	args->t_eat = ft_atoi(av[3]);
-	args->t_sleep = ft_atoi(av[4]);
-	if (ac == 6)
-	{
-		args->num_meals = ft_atoi(av[5]);
-		if (args->num_meals < 0)
-			return (NULL);
-	}
-	else
-		args->num_meals = -1;
-	if (args->philo_num < 1 || args->t_die < 1 || args->t_eat < 0
-		|| args->t_sleep < 0)
-		return (NULL);
-	return (args);
-}
-
-void	print_state(t_philo *philo, char *str)
-{
-	bool	stop;
 	long	time;
 
-	pthread_mutex_lock(&philo->shared->print_mutex);
-	pthread_mutex_lock(&philo->shared->stop_mutex);
-	stop = philo->shared->stop_simulation;
-	pthread_mutex_unlock(&philo->shared->stop_mutex);
-	if (!stop)
-	{
-		time = get_time_ms() - philo->shared->start_time;
-		printf("%ld %d %s\n", time, philo->id, str);
-	}
-	pthread_mutex_unlock(&philo->shared->print_mutex);
+	pthread_mutex_lock(philosophers[i].last_eat);
+	time = philosophers[i].last_time_eat;
+	pthread_mutex_unlock(philosophers[i].last_eat);
+	return (time);
 }
 
-void	take_fork(t_philo *philo)
+long	get_time(void)
 {
-	pthread_mutex_t	*first_fork;
-	pthread_mutex_t	*second_fork;
+	struct timeval	tv;
 
-	if (philo->left_fork < philo->right_fork)
-	{
-		first_fork = philo->left_fork;
-		second_fork = philo->right_fork;
-	}
-	else
-	{
-		first_fork = philo->right_fork;
-		second_fork = philo->left_fork;
-	}
-	if (philo->id % 2 == 1)
-		usleep(100);
-	pthread_mutex_lock(first_fork);
-	print_state(philo, "has taken a fork");
-	pthread_mutex_lock(second_fork);
-	print_state(philo, "has taken a fork");
+	gettimeofday(&tv, NULL);
+	return ((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
 }
 
-void	put_down_fork(t_philo *philo)
+void	ft_sleep(long time_ms)
 {
-	if (philo->left_fork > philo->right_fork)
-	{
-		pthread_mutex_unlock(philo->right_fork);
-		pthread_mutex_unlock(philo->left_fork);
-	}
-	else
-	{
-		pthread_mutex_unlock(philo->left_fork);
-		pthread_mutex_unlock(philo->right_fork);
-	}
+	long	start_time;
+
+	start_time = get_time();
+	while (get_time() - start_time < time_ms)
+		usleep(500);
 }
 
-void	last_meal_eaten(t_philo *philo)
+int	meals_number(t_philo philo)
 {
-	pthread_mutex_lock(philo->meals_mutex);
-	philo->last_time_eat = get_time_ms();
-	philo->meals_eaten++;
-	pthread_mutex_unlock(philo->meals_mutex);
+	int	num_eat;
+
+	pthread_mutex_lock(philo.meals_lock);
+	num_eat = *philo.n_eat;
+	pthread_mutex_unlock(philo.meals_lock);
+	return (num_eat);
+}
+
+void	print_state(char *str, int id, long start_time,
+			pthread_mutex_t *print_lock)
+{
+	pthread_mutex_lock(print_lock);
+	printf("%ld %d %s\n", get_time() - start_time, id, str);
+	if (str[0] != 'd')
+		pthread_mutex_unlock(print_lock);
 }

@@ -6,7 +6,7 @@
 /*   By: mohmajdo <mohmajdo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/19 17:43:27 by mohmajdo          #+#    #+#             */
-/*   Updated: 2025/08/16 22:52:03 by mohmajdo         ###   ########.fr       */
+/*   Updated: 2025/08/22 19:44:54 by mohmajdo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,25 +46,4 @@ int	ft_atoi(char *str)
 	if (r > (unsigned long)LONG_MAX + 1 && signe == -1)
 		return (0);
 	return ((int)r * signe);
-}
-
-bool	ft_innit_forks(t_prog *prog)
-{
-	int	i;
-
-	i = 0;
-	prog->forks = malloc(sizeof(pthread_mutex_t) * prog->args.philo_num);
-	if (!prog->forks)
-		return (false);
-	while (i < prog->args.philo_num)
-	{
-		if (pthread_mutex_init(&prog->forks[i], NULL) != 0)
-		{
-			while (--i >= 0)
-				pthread_mutex_destroy(&prog->forks[i]);
-			return (free(prog->forks), false);
-		}
-		i++;
-	}
-	return (true);
 }
