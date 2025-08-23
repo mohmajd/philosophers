@@ -6,7 +6,7 @@
 /*   By: mohmajdo <mohmajdo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/16 22:37:04 by mohmajdo          #+#    #+#             */
-/*   Updated: 2025/08/23 08:09:09 by mohmajdo         ###   ########.fr       */
+/*   Updated: 2025/08/23 08:14:24 by mohmajdo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,10 @@ void	check_is_died(t_philo *philo, pthread_t *thread_id, int i, long time)
 
 void	eat_update(t_philo *philo, int *meals)
 {
+	pthread_mutex_lock(philo->last_eat);
+	philo->last_time_eat = get_time();
+	pthread_mutex_unlock(philo->last_eat);
+	ft_sleep(philo->args->time_eat);
 	++(*meals);
 	if (*meals == philo->args->num_eat)
 	{
@@ -50,10 +54,6 @@ void	eat_update(t_philo *philo, int *meals)
 		++(*philo->n_eat);
 		pthread_mutex_unlock(philo->meals_lock);
 	}
-	pthread_mutex_lock(philo->last_eat);
-	philo->last_time_eat = get_time();
-	pthread_mutex_unlock(philo->last_eat);
-	ft_sleep(philo->args->time_eat);
 }
 
 void	take_forks(t_philo *philo, pthread_mutex_t *forks)

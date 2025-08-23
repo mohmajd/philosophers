@@ -6,7 +6,7 @@
 /*   By: mohmajdo <mohmajdo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 01:36:15 by mohmajdo          #+#    #+#             */
-/*   Updated: 2025/08/23 08:07:10 by mohmajdo         ###   ########.fr       */
+/*   Updated: 2025/08/23 08:12:27 by mohmajdo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,6 @@ t_args	*check_args(int ac, char **av)
 	}
 	else
 		args->num_eat = -1;
-	// args->died = 0;
 	return (args);
 }
 

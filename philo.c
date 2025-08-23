@@ -6,7 +6,7 @@
 /*   By: mohmajdo <mohmajdo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/13 17:44:12 by mohmajdo          #+#    #+#             */
-/*   Updated: 2025/08/22 22:05:43 by mohmajdo         ###   ########.fr       */
+/*   Updated: 2025/08/23 08:55:18 by mohmajdo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,8 @@ pthread_mutex_t	*create_forks(int num_philos)
 		{
 			while (--i > 0)
 				pthread_mutex_destroy(&forks[i]);
+			free (forks);
+			return (NULL);
 		}
 		i++;
 	}
@@ -89,9 +91,10 @@ bool	philo(t_philo *philosophers, pthread_mutex_t *forks,
 		philosophers[i].n_eat = &var;
 		philosophers[i].last_eat = malloc(sizeof(pthread_mutex_t));
 		if (!philosophers[i].last_eat)
-			return (free_philo(philosophers), false);
+			return (free_philo_fails(philosophers, i), free(philo_id), false);
+		return (free_philo_fails(philosophers, i), free(philo_id), false);
 		if (pthread_mutex_init(philosophers[i].last_eat, NULL) != 0)
-			return (free_philo(philosophers), false);
+			return (free_philo_fails(philosophers, i + 1), free(philo_id), false);
 		philosophers[i].print_lock = philosophers->print_lock;
 		philosophers[i].meals_lock = philosophers->meals_lock;
 	}

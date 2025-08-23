@@ -6,7 +6,7 @@
 /*   By: mohmajdo <mohmajdo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 01:37:10 by mohmajdo          #+#    #+#             */
-/*   Updated: 2025/08/23 08:06:47 by mohmajdo         ###   ########.fr       */
+/*   Updated: 2025/08/23 08:54:18 by mohmajdo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,4 +67,5 @@ void			print_state(char *str, int id, long start_time	\
 int				meals_number(t_philo philo);
 bool			check_num_args(char **av);
 int				ft_atoi(char *str);
+void			free_philo_fails(t_philo *philo, int i);
 #endif
